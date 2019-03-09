@@ -1,10 +1,11 @@
 <?php 
-
+session_start();
 require_once("vendor/autoload.php");
 
 use \Slim\Slim;
 use \dbfolder\Page;
 use \dbfolder\Adminpage;
+use \dbfolder\User;
 $app = new Slim();
 
 //remove on release
@@ -20,11 +21,34 @@ $app->get('/', function() {
 
 });
 $app->get("/admin", function(){
+	User::verifyLogin();
 	
 	$page = new Adminpage();
 	$page->setTpl("index");
 });
-//.htaccess
+
+$app->get("/admin/login", function(){
+	$page = new Adminpage([
+		"header"=>false,
+		"footer"=>false
+	]);
+	$page->setTpl("login");
+});
+$app->post("/admin/login",function(){
+
+	User::login($_POST["login"],$_POST["password"]);
+	header("Location: /admin");
+	exit;
+});
+
+$app->get("/admin/logout",function(){
+
+	User::logout();
+	header("Location: /admin/login");
+	exit;
+
+});
+//.htaccess else routes wont work
 $app->run();
 
 ?>
