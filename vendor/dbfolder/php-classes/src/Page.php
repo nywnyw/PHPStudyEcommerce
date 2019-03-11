@@ -16,6 +16,7 @@ class Page{
     ];
 
     public function __construct($opts= [],$tpl_dir = "/views/"){
+       
         $this->options = array_merge($this->default,$opts);
         $config = array(
             "tpl_dir"       => $_SERVER["DOCUMENT_ROOT"].$tpl_dir,
@@ -28,7 +29,8 @@ class Page{
 
         $this->setData($this->options["data"]);
 
-        if($this->default["header"]==true){
+        if($this->options["header"]===true){
+            
         $this->tpl->draw("header");
         }
     }
@@ -47,7 +49,7 @@ class Page{
    
     
     public function __destruct(){
-        if($this->default["footer"]==true){
+        if($this->options["footer"]===true){
         $this->tpl->draw("footer");
         }        
     }    

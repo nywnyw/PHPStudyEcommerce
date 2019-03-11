@@ -6,10 +6,15 @@ use \Slim\Slim;
 use \dbfolder\Page;
 use \dbfolder\Adminpage;
 use \dbfolder\User;
+use \dbfolder\Category;
+use \dbfolder\Product;
+
 $app = new Slim();
 
 //remove on release
 $app->config('debug', true);
+
+require_once("index-admin.php");
 
 $app->get('/', function() {
 
@@ -20,34 +25,15 @@ $app->get('/', function() {
 	//echo json_encode($result);
 
 });
-$app->get("/admin", function(){
-	User::verifyLogin();
-	
-	$page = new Adminpage();
-	$page->setTpl("index");
-});
 
-$app->get("/admin/login", function(){
-	$page = new Adminpage([
-		"header"=>false,
-		"footer"=>false
-	]);
-	$page->setTpl("login");
-});
-$app->post("/admin/login",function(){
-
-	User::login($_POST["login"],$_POST["password"]);
-	header("Location: /admin");
-	exit;
-});
-
-$app->get("/admin/logout",function(){
-
-	User::logout();
-	header("Location: /admin/login");
-	exit;
+$app->get("/category/:id",function($id){
+	 $category = new Category();
+	 $category->get((int)$id);
+	 $page = new Page();
+	 $page->setTpl("category",["category"=>$category->getValues(),"products"=>[]]);
 
 });
+
 //.htaccess else routes wont work
 $app->run();
 
